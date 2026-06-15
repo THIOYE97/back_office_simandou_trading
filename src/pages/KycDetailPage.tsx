@@ -9,11 +9,19 @@ interface Piece {
   typeDoc: string;
 }
 interface Detail {
-  client: { id: string; telephone: string; type: string };
+  client: { id: string; telephone: string; type: string; statutKyc: string };
+  statut: 'SOUMIS' | 'VALIDE' | 'REJETE' | 'INFOS_REQUISES';
   infos: Record<string, string>;
   pieces: Piece[];
   soumisAt: string;
 }
+
+const DOSSIER_STATUT: Record<string, { label: string; color: string }> = {
+  SOUMIS: { label: 'En attente de vérification', color: colors.warning },
+  VALIDE: { label: 'Dossier validé', color: colors.success },
+  REJETE: { label: 'Dossier rejeté', color: colors.danger },
+  INFOS_REQUISES: { label: 'Compléments demandés', color: colors.warning },
+};
 
 const FIELD_LABELS: Record<string, string> = {
   nom: 'Nom',
@@ -114,30 +122,46 @@ export function KycDetailPage() {
         </div>
       </div>
 
-      {mode && (
-        <div className="field">
-          <label>Motif ({mode === 'REJETER' ? 'rejet' : 'compléments demandés'})</label>
-          <input
-            className="input"
-            value={motif}
-            onChange={(e) => setMotif(e.target.value)}
-            placeholder="Précisez le motif…"
-            autoFocus
-          />
+      {detail.statut === 'SOUMIS' ? (
+        <>
+          {mode && (
+            <div className="field">
+              <label>Motif ({mode === 'REJETER' ? 'rejet' : 'compléments demandés'})</label>
+              <input
+                className="input"
+                value={motif}
+                onChange={(e) => setMotif(e.target.value)}
+                placeholder="Précisez le motif…"
+                autoFocus
+              />
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button className="btn btn-success" disabled={busy} onClick={() => decide('VALIDER')}>
+              <Check size={18} /> Valider
+            </button>
+            <button className="btn btn-warning" disabled={busy} onClick={() => decide('INFOS')}>
+              <AlertCircle size={18} /> Demander des infos
+            </button>
+            <button className="btn btn-danger" disabled={busy} onClick={() => decide('REJETER')}>
+              <X size={18} /> Rejeter
+            </button>
+          </div>
+        </>
+      ) : (
+        <div
+          className="badge"
+          style={{
+            color: DOSSIER_STATUT[detail.statut].color,
+            borderColor: DOSSIER_STATUT[detail.statut].color + '55',
+            background: DOSSIER_STATUT[detail.statut].color + '14',
+            padding: '10px 16px',
+            fontSize: 14,
+          }}
+        >
+          {DOSSIER_STATUT[detail.statut].label}
         </div>
       )}
-
-      <div style={{ display: 'flex', gap: 12 }}>
-        <button className="btn btn-success" disabled={busy} onClick={() => decide('VALIDER')}>
-          <Check size={18} /> Valider
-        </button>
-        <button className="btn btn-warning" disabled={busy} onClick={() => decide('INFOS')}>
-          <AlertCircle size={18} /> Demander des infos
-        </button>
-        <button className="btn btn-danger" disabled={busy} onClick={() => decide('REJETER')}>
-          <X size={18} /> Rejeter
-        </button>
-      </div>
     </div>
   );
 }
