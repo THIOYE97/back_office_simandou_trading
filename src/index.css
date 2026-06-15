@@ -1,16 +1,160 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  --brand: #1170e4;
+  --brand-dark: #0b5fd0;
+  --navy: #0e1726;
+  --bg: #f2f5f9;
+  --surface: #ffffff;
+  --border: #e4e9f1;
+  --text: #0e1726;
+  --text-soft: #5b6b82;
+  --text-muted: #8a99ad;
+  --success: #15b97d;
+  --danger: #e5484d;
+  --warning: #f59e0b;
 }
 
-body {
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
   margin: 0;
-  background: #f7f8fa;
-  color: #1a1a1a;
+}
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
 
-.page {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem;
+/* --- Boutons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
+  font-family: inherit;
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--brand);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--brand-dark);
+}
+.btn-success {
+  background: var(--success);
+  color: #fff;
+}
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn-warning {
+  background: #fff;
+  color: var(--warning);
+  border-color: var(--warning);
+}
+.btn-ghost {
+  background: #fff;
+  color: var(--text-soft);
+  border-color: var(--border);
+}
+.btn-ghost:hover {
+  background: var(--bg);
+}
+
+/* --- Champs --- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+.input {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: 15px;
+  color: var(--text);
+  font-family: inherit;
+  outline: none;
+}
+.input:focus {
+  border-color: var(--brand);
+}
+
+/* --- Carte --- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(27, 43, 74, 0.06);
+}
+
+/* --- Badge statut --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+/* --- Table --- */
+table.tbl {
+  width: 100%;
+  border-collapse: collapse;
+}
+table.tbl th {
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+table.tbl td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+table.tbl tr:last-child td {
+  border-bottom: none;
+}
+table.tbl tbody tr {
+  cursor: pointer;
+  transition: 0.12s;
+}
+table.tbl tbody tr:hover {
+  background: var(--bg);
+}
+
+a {
+  color: var(--brand);
+  text-decoration: none;
 }

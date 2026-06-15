@@ -1,15 +1,28 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './auth/AuthContext';
+import { Layout } from './components/Layout';
 import { LoginPage } from './pages/LoginPage';
-import { DashboardPage } from './pages/DashboardPage';
+import { KycListPage } from './pages/KycListPage';
+import { KycDetailPage } from './pages/KycDetailPage';
+import { ReactNode } from 'react';
+
+function Protected({ children }: { children: ReactNode }) {
+  const { authed } = useAuth();
+  if (!authed) return <Navigate to="/login" replace />;
+  return <Layout>{children}</Layout>;
+}
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/kyc" element={<Protected><KycListPage /></Protected>} />
+          <Route path="/kyc/:clientId" element={<Protected><KycDetailPage /></Protected>} />
+          <Route path="*" element={<Navigate to="/kyc" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
