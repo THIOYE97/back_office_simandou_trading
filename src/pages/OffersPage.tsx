@@ -8,6 +8,7 @@ interface Offre {
   devise: 'USD' | 'EUR' | 'XOF';
   tauxAchat: string;
   tauxVente: string;
+  vendeurNom: string | null;
   statut: 'BROUILLON' | 'ACTIVE' | 'INACTIVE';
   majAt: string;
 }
@@ -19,6 +20,7 @@ export function OffersPage() {
   const [devise, setDevise] = useState<(typeof DEVISES)[number]>('USD');
   const [achat, setAchat] = useState('');
   const [vente, setVente] = useState('');
+  const [vendeur, setVendeur] = useState('');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -38,14 +40,16 @@ export function OffersPage() {
     }
     setBusy(true);
     try {
+      const vendeurNom = vendeur.trim() || undefined;
       const existing = offres.find((o) => o.devise === devise);
       if (existing) {
-        await api.patch(`/admin/offres/${existing.id}`, { tauxAchat, tauxVente });
+        await api.patch(`/admin/offres/${existing.id}`, { tauxAchat, tauxVente, vendeurNom });
       } else {
-        await api.post('/admin/offres', { devise, tauxAchat, tauxVente });
+        await api.post('/admin/offres', { devise, tauxAchat, tauxVente, vendeurNom });
       }
       setAchat('');
       setVente('');
+      setVendeur('');
       setMsg('Taux enregistrés.');
       await load();
     } finally {
@@ -91,6 +95,10 @@ export function OffersPage() {
             <label>Taux de vente (GNF)</label>
             <input className="input" inputMode="decimal" value={vente} onChange={(e) => setVente(e.target.value)} placeholder="8750" />
           </div>
+          <div className="field" style={{ margin: 0, minWidth: 200 }}>
+            <label>Vendeur (nom / entité)</label>
+            <input className="input" value={vendeur} onChange={(e) => setVendeur(e.target.value)} placeholder="Interne — non visible côté client" />
+          </div>
           <button className="btn btn-primary" disabled={busy}>
             <Save size={18} /> Enregistrer
           </button>
@@ -103,6 +111,7 @@ export function OffersPage() {
           <thead>
             <tr>
               <th>Paire</th>
+              <th>Vendeur</th>
               <th>Achat</th>
               <th>Vente</th>
               <th>Statut</th>
@@ -114,6 +123,7 @@ export function OffersPage() {
             {offres.map((o) => (
               <tr key={o.id} style={{ cursor: 'default' }}>
                 <td style={{ fontWeight: 600 }}>GNF / {o.devise}</td>
+                <td style={{ color: 'var(--text-soft)' }}>{o.vendeurNom || '—'}</td>
                 <td>{Number(o.tauxAchat).toLocaleString('fr-FR')}</td>
                 <td>{Number(o.tauxVente).toLocaleString('fr-FR')}</td>
                 <td>
@@ -139,7 +149,7 @@ export function OffersPage() {
             ))}
             {offres.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: 40 }}>
+                <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: 40 }}>
                   Aucune offre. Créez vos premiers taux ci-dessus.
                 </td>
               </tr>

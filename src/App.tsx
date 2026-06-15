@@ -5,6 +5,7 @@ import { LoginPage } from './pages/LoginPage';
 import { KycListPage } from './pages/KycListPage';
 import { KycDetailPage } from './pages/KycDetailPage';
 import { OffersPage } from './pages/OffersPage';
+import { TransactionsPage } from './pages/TransactionsPage';
 import { ReactNode } from 'react';
 
 function Protected({ children }: { children: ReactNode }) {
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/kyc" element={<Protected><KycListPage /></Protected>} />
           <Route path="/kyc/:clientId" element={<Protected><KycDetailPage /></Protected>} />
           <Route path="/offres" element={<Protected><OffersPage /></Protected>} />
+          <Route path="/transactions" element={<Protected><TransactionsPage /></Protected>} />
           <Route path="*" element={<Navigate to="/kyc" replace />} />
         </Routes>
       </BrowserRouter>
