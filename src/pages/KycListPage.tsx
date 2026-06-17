@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Inbox, ChevronRight } from 'lucide-react';
 import { api } from '../lib/api';
 import { colors } from '../theme';
+import { Pagination, PER_PAGE } from '../components/Pagination';
 
 type DossierStatut = 'SOUMIS' | 'VALIDE' | 'REJETE' | 'INFOS_REQUISES';
 
@@ -37,7 +38,10 @@ export function KycListPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('');
+  const [page, setPage] = useState(1);
   const navigate = useNavigate();
+
+  const paged = rows.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   const load = useCallback((statut: string) => {
     setLoading(true);
@@ -65,7 +69,10 @@ export function KycListPage() {
           return (
             <button
               key={t.key}
-              onClick={() => setTab(t.key)}
+              onClick={() => {
+                setTab(t.key);
+                setPage(1);
+              }}
               className="btn"
               style={{
                 height: 36,
@@ -103,7 +110,7 @@ export function KycListPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => {
+              {paged.map((r) => {
                 const s = STATUT[r.statut];
                 return (
                   <tr key={r.clientId} onClick={() => navigate(`/kyc/${r.clientId}`)}>
@@ -128,6 +135,7 @@ export function KycListPage() {
             </tbody>
           </table>
         )}
+        {!loading && rows.length > 0 && <Pagination page={page} total={rows.length} onPage={setPage} />}
       </div>
     </div>
   );

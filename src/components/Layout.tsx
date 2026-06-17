@@ -6,9 +6,9 @@ import { BrandLogo } from './BrandLogo';
 import { colors } from '../theme';
 
 const NAV = [
+  { to: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
   { to: '/kyc', label: 'Dossiers KYC', icon: ShieldCheck },
   { to: '/offres', label: 'Offres & taux', icon: TrendingUp },
-  { to: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -65,11 +65,12 @@ export function Layout({ children }: { children: ReactNode }) {
             gap: 10,
             padding: '12px 14px',
             borderRadius: 12,
-            background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.15)',
-            color: 'rgba(255,255,255,0.8)',
+            background: 'rgba(229,72,77,0.12)',
+            border: '1px solid rgba(229,72,77,0.35)',
+            color: '#FF6B70',
             cursor: 'pointer',
             fontSize: 14,
+            fontWeight: 600,
             fontFamily: 'inherit',
           }}
         >

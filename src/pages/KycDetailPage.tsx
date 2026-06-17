@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, X, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Check, X, AlertCircle, User, Building2, Phone } from 'lucide-react';
 import { api } from '../lib/api';
 import { colors } from '../theme';
 
@@ -72,63 +72,107 @@ export function KycDetailPage() {
 
   if (!detail) return <div style={{ color: 'var(--text-muted)' }}>Chargement…</div>;
 
+  const isBusiness = detail.client.type === 'BUSINESS';
+  const st = DOSSIER_STATUT[detail.statut];
+  const nom = isBusiness
+    ? detail.infos.raisonSociale
+    : `${detail.infos.nom ?? ''} ${detail.infos.prenom ?? ''}`.trim();
+
   return (
-    <div style={{ maxWidth: 760 }}>
+    <div style={{ maxWidth: 820 }}>
       <button className="btn btn-ghost" onClick={() => navigate('/kyc')} style={{ marginBottom: 20 }}>
-        <ArrowLeft size={18} /> Retour
+        <ArrowLeft size={18} /> Dossiers KYC
       </button>
 
+      {/* En-tête identité */}
       <div className="card" style={{ padding: 28, marginBottom: 20 }}>
-        <h2 style={{ margin: '0 0 4px', fontSize: 20 }}>
-          {detail.client.type === 'BUSINESS' ? 'Entreprise' : 'Particulier'} · {detail.client.telephone}
-        </h2>
-        <p style={{ color: 'var(--text-muted)', margin: '0 0 20px', fontSize: 13 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 16,
+                background: colors.brand + '14',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {isBusiness ? <Building2 size={26} color={colors.brand} /> : <User size={26} color={colors.brand} />}
+            </div>
+            <div>
+              <h2 style={{ margin: 0, fontSize: 21 }}>{nom || (isBusiness ? 'Entreprise' : 'Particulier')}</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-muted)', fontSize: 13.5, marginTop: 3 }}>
+                <Phone size={14} /> {detail.client.telephone}
+                <span style={{ margin: '0 4px' }}>·</span>
+                {isBusiness ? 'Entreprise' : 'Particulier'}
+              </div>
+            </div>
+          </div>
+          <span
+            className="badge"
+            style={{ color: st.color, borderColor: st.color + '55', background: st.color + '14', padding: '8px 14px', fontSize: 13.5 }}
+          >
+            {st.label}
+          </span>
+        </div>
+        <div style={{ color: 'var(--text-muted)', fontSize: 12.5, marginTop: 16 }}>
           Soumis le {new Date(detail.soumisAt).toLocaleString('fr-FR')}
-        </p>
+        </div>
+      </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      {/* Informations */}
+      <div className="card" style={{ padding: 28, marginBottom: 20 }}>
+        <h3 style={{ margin: '0 0 18px', fontSize: 16 }}>Informations</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
           {Object.entries(detail.infos)
             .filter(([k]) => FIELD_LABELS[k] && k !== 'type')
             .map(([k, v]) => (
-              <div key={k}>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+              <div key={k} style={{ borderLeft: `2px solid ${colors.border}`, paddingLeft: 12 }}>
+                <div style={{ fontSize: 11.5, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
                   {FIELD_LABELS[k]}
                 </div>
-                <div style={{ fontWeight: 600, marginTop: 2 }}>{v || '—'}</div>
+                <div style={{ fontWeight: 600, marginTop: 3 }}>{v || '—'}</div>
               </div>
             ))}
         </div>
       </div>
 
+      {/* Pièce d'identité */}
       <div className="card" style={{ padding: 28, marginBottom: 20 }}>
         <h3 style={{ margin: '0 0 16px', fontSize: 16 }}>Pièce d'identité</h3>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
           {detail.pieces.map((p) => (
             <div key={p.id}>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6, fontWeight: 600 }}>
                 {p.typeDoc === 'PIECE_VERSO' ? 'Verso' : 'Recto'}
               </div>
               {images[p.id] ? (
                 <img
                   src={images[p.id]}
                   alt={p.typeDoc}
-                  style={{ width: 320, maxWidth: '100%', borderRadius: 12, border: `1px solid ${colors.border}` }}
+                  style={{ width: 320, maxWidth: '100%', borderRadius: 12, border: `1px solid ${colors.border}`, display: 'block' }}
                 />
               ) : (
                 <div style={{ width: 320, height: 200, background: colors.bg, borderRadius: 12 }} />
               )}
             </div>
           ))}
+          {detail.pieces.length === 0 && <div style={{ color: 'var(--text-muted)' }}>Aucune pièce jointe.</div>}
         </div>
       </div>
 
+      {/* Décision */}
       {detail.statut === 'SOUMIS' ? (
-        <>
+        <div className="card" style={{ padding: 24 }}>
+          <h3 style={{ margin: '0 0 16px', fontSize: 16 }}>Décision</h3>
           {mode && (
             <div className="field">
               <label>Motif ({mode === 'REJETER' ? 'rejet' : 'compléments demandés'})</label>
               <input
                 className="input"
+                style={{ width: '100%', boxSizing: 'border-box' }}
                 value={motif}
                 onChange={(e) => setMotif(e.target.value)}
                 placeholder="Précisez le motif…"
@@ -136,7 +180,7 @@ export function KycDetailPage() {
               />
             </div>
           )}
-          <div style={{ display: 'flex', gap: 12 }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <button className="btn btn-success" disabled={busy} onClick={() => decide('VALIDER')}>
               <Check size={18} /> Valider
             </button>
@@ -147,19 +191,19 @@ export function KycDetailPage() {
               <X size={18} /> Rejeter
             </button>
           </div>
-        </>
+        </div>
       ) : (
         <div
           className="badge"
           style={{
-            color: DOSSIER_STATUT[detail.statut].color,
-            borderColor: DOSSIER_STATUT[detail.statut].color + '55',
-            background: DOSSIER_STATUT[detail.statut].color + '14',
-            padding: '10px 16px',
+            color: st.color,
+            borderColor: st.color + '55',
+            background: st.color + '14',
+            padding: '12px 18px',
             fontSize: 14,
           }}
         >
-          {DOSSIER_STATUT[detail.statut].label}
+          {st.label}
         </div>
       )}
     </div>
