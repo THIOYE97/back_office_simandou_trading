@@ -146,7 +146,7 @@ export function KycDetailPage() {
           {detail.pieces.map((p) => (
             <div key={p.id}>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6, fontWeight: 600 }}>
-                {p.typeDoc === 'PIECE_VERSO' ? 'Verso' : 'Recto'}
+                {p.typeDoc === 'PIECE_VERSO' ? 'Verso' : p.typeDoc === 'SELFIE' ? 'Selfie (vérification)' : 'Recto'}
               </div>
               {images[p.id] ? (
                 <img

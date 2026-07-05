@@ -1,7 +1,8 @@
-// Charte backoffice AYOUB — claire, brand blue, sidebar navy.
+// Charte backoffice Simandou Trading — claire, bleu royal + accent orange, sidebar navy.
 export const colors = {
-  brand: '#1170E4',
-  brandDark: '#0B5FD0',
+  brand: '#0A3D91',
+  brandDark: '#072C6B',
+  accent: '#FF7A00',
   navy: '#0E1726',
   navy2: '#16223A',
   bg: '#F2F5F9',

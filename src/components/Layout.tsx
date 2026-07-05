@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { ShieldCheck, LogOut, TrendingUp, ArrowLeftRight } from 'lucide-react';
+import { ShieldCheck, LogOut, TrendingUp, ArrowLeftRight, MessagesSquare } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { BrandLogo } from './BrandLogo';
 import { colors } from '../theme';
@@ -9,6 +9,7 @@ const NAV = [
   { to: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
   { to: '/kyc', label: 'Dossiers KYC', icon: ShieldCheck },
   { to: '/offres', label: 'Offres & taux', icon: TrendingUp },
+  { to: '/support', label: 'Support', icon: MessagesSquare },
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
